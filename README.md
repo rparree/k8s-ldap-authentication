@@ -13,14 +13,28 @@ GOOS=linux GOARCH=amd64 go build
 ## Run
 
 ```bash
-k8s-ldap-authentication <ldap-ip> <key> <cert>
+k8s-ldap-authentication -H <ldap-ip> -tls-key  <key> -tls-certificate <cert>
 ```
 
 Arguments:
 
-- `<ldap-ip>`: IP address of the LDAP directory
-- `<key>`: HTTPS server private key
-- `<cert>`: HTTPS server certificate
+```bash
+Usage of ./k8s-ldap-authentication:
+  -D string
+        binddn to bind to the LDAP directory (default "cn=admin,dc=mycompany,dc=com")
+  -H string
+        URI to the ldap server (default "ldap://localhost")
+  -b string
+        search base (default "cn=admin,dc=mycompany,dc=com")
+  -l string
+        listen address (default ":443")
+  -tls-certificate string
+        certificate file
+  -tls-key string
+        private key file
+  -w string
+        password for simple authentication (default "adminpassword")
+```
 
 You can generate an HTTPS private key and a self-signed certificate with the following command:
 
