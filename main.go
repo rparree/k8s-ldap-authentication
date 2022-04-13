@@ -2,24 +2,40 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"github.com/go-ldap/ldap"
 	"io/ioutil"
 	"k8s.io/api/authentication/v1"
 	"log"
 	"net/http"
-	"os"
 	"strings"
 )
 
 var ldapURL string
+var username string
+var password string
+var addr string
+var cert string
+var key string
+var searchBase string
 
 func main() {
-	ldapURL = "ldap://" + os.Args[1]
+
+	flag.StringVar(&ldapURL, "H", "ldap://localhost", "URI to the ldap server")
+	flag.StringVar(&username, "D", "cn=admin,dc=mycompany,dc=com", "binddn to bind to the LDAP directory")
+	flag.StringVar(&searchBase, "b", "cn=admin,dc=mycompany,dc=com", "search base")
+	flag.StringVar(&password, "w", "adminpassword", "password for simple authentication")
+	flag.StringVar(&addr, "l", ":443", "listen address")
+
+	flag.StringVar(&cert, "tls-certificate", "", "certificate file")
+	flag.StringVar(&key, "tls-key", "", "private key file")
+
+	flag.Parse()
 	log.Printf("Using LDAP directory %s\n", ldapURL)
-	log.Println("Listening on port 443 for requests...")
+	log.Printf("Listening on %s ...\n", addr)
 	http.HandleFunc("/", handler)
-	log.Fatal(http.ListenAndServeTLS(":443", os.Args[3], os.Args[2], nil))
+	log.Fatal(http.ListenAndServeTLS(addr, cert, key, nil))
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -91,21 +107,21 @@ func ldapSearch(username, password string) (*v1.UserInfo, error) {
 	defer l.Close()
 
 	// Authenticate as LDAP admin user
-	err = l.Bind("cn=admin,dc=mycompany,dc=com", "adminpassword")
+	err = l.Bind(username, password)
 	if err != nil {
 		return nil, err
 	}
 
 	// Execute LDAP Search request
 	searchRequest := ldap.NewSearchRequest(
-		"dc=mycompany,dc=com",  // Search base
+		searchBase,             // Search base
 		ldap.ScopeWholeSubtree, // Search scope
 		ldap.NeverDerefAliases, // Dereference aliases
 		0,                      // Size limit (0 = no limit)
 		0,                      // Time limit (0 = no limit)
 		false,                  // Types only
 		fmt.Sprintf("(&(objectClass=inetOrgPerson)(cn=%s)(userPassword=%s))", username, password), // Filter
-		nil, // Attributes (nil = all user attributes)
+		nil, // Attributes (nil = all username attributes)
 		nil, // Additional 'Controls'
 	)
 	result, err := l.Search(searchRequest)
