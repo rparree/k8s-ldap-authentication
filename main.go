@@ -81,6 +81,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		tr.Status.User = *userInfo
 	}
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(tr)
 	if err != nil {
 		writeError(w, err)
