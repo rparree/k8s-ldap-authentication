@@ -128,6 +128,7 @@ func ldapSearch(username, password string) (*v1.UserInfo, error) {
 		nil, // Attributes (nil = all username attributes)
 		nil, // Additional 'Controls'
 	)
+	log.Printf("Searching for %s ...\n", searchRequest)
 	result, err := l.Search(searchRequest)
 	if err != nil {
 		return nil, err
