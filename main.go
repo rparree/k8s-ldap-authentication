@@ -24,7 +24,7 @@ func main() {
 
 	flag.StringVar(&ldapURL, "H", "ldap://localhost", "URI to the ldap server")
 	flag.StringVar(&username, "D", "cn=admin,dc=mycompany,dc=com", "binddn to bind to the LDAP directory")
-	flag.StringVar(&searchBase, "b", "cn=admin,dc=mycompany,dc=com", "search base")
+	flag.StringVar(&searchBase, "b", "dc=mycompany,dc=com", "search base")
 	flag.StringVar(&password, "w", "adminpassword", "password for simple authentication")
 	flag.StringVar(&addr, "l", ":443", "listen address")
 
