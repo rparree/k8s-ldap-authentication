@@ -80,19 +80,12 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		tr.Status.Authenticated = true
 		tr.Status.User = *userInfo
 	}
-
-	// Marshal the TokenReview to JSON and send it back
-	b, err = json.Marshal(tr)
+	w.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(w).Encode(tr)
 	if err != nil {
 		writeError(w, err)
 		return
 	}
-	_, err = w.Write(b)
-	if err != nil {
-		writeError(w, err)
-		return
-	}
-	log.Printf("Returning: %s\n", string(b))
 }
 
 func writeError(w http.ResponseWriter, err error) {
