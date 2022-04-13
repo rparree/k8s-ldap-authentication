@@ -33,6 +33,7 @@ func main() {
 
 	flag.Parse()
 	log.Printf("Using LDAP directory %s\n", ldapURL)
+	log.Printf("Search base %s ...\n", searchBase)
 	log.Printf("Listening on %s ...\n", addr)
 	http.HandleFunc("/", handler)
 	log.Fatal(http.ListenAndServeTLS(addr, cert, key, nil))
@@ -128,7 +129,7 @@ func ldapSearch(username, password string) (*v1.UserInfo, error) {
 		nil, // Attributes (nil = all username attributes)
 		nil, // Additional 'Controls'
 	)
-	log.Printf("Searching for %s ...\n", searchRequest)
+
 	result, err := l.Search(searchRequest)
 	if err != nil {
 		return nil, err
