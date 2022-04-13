@@ -86,14 +86,18 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		writeError(w, err)
 		return
 	}
-	w.Write(b)
+	_, err = w.Write(b)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
 	log.Printf("Returning: %s\n", string(b))
 }
 
 func writeError(w http.ResponseWriter, err error) {
 	err = fmt.Errorf("Error: %v", err)
 	w.WriteHeader(http.StatusInternalServerError) // 500
-	fmt.Fprintln(w, err)
+	_, _ = fmt.Fprintln(w, err)
 	log.Println(err)
 }
 
