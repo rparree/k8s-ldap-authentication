@@ -13,8 +13,8 @@ import (
 )
 
 var ldapURL string
-var username string
-var password string
+var bindUsername string
+var bindPassword string
 var addr string
 var cert string
 var key string
@@ -23,9 +23,9 @@ var searchBase string
 func main() {
 
 	flag.StringVar(&ldapURL, "H", "ldap://localhost", "URI to the ldap server")
-	flag.StringVar(&username, "D", "cn=admin,dc=mycompany,dc=com", "binddn to bind to the LDAP directory")
+	flag.StringVar(&bindUsername, "D", "cn=admin,dc=mycompany,dc=com", "binddn to bind to the LDAP directory")
 	flag.StringVar(&searchBase, "b", "dc=mycompany,dc=com", "search base")
-	flag.StringVar(&password, "w", "adminpassword", "password for simple authentication")
+	flag.StringVar(&bindPassword, "w", "adminpassword", "password for simple authentication")
 	flag.StringVar(&addr, "l", ":443", "listen address")
 
 	flag.StringVar(&cert, "tls-certificate", "", "certificate file")
@@ -112,7 +112,7 @@ func ldapSearch(username, password string) (*v1.UserInfo, error) {
 	defer l.Close()
 
 	// Authenticate as LDAP admin user
-	err = l.Bind(username, password)
+	err = l.Bind(bindUsername, bindPassword)
 	if err != nil {
 		return nil, err
 	}
